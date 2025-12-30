@@ -1,0 +1,8 @@
+// Main global styles - loaded on every page
+// Keep this lean for optimal performance
+
+@use 'variables';
+@use 'base';
+@use 'layout';
+@use 'posts';
+@use 'components';

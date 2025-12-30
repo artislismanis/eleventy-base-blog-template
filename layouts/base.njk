@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="{{ site.language }}">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{{ title or site.title }}</title>
+		<meta name="description" content="{{ description or site.description }}" />
+		<link
+			rel="alternate"
+			href="/feed/feed.xml"
+			type="application/atom+xml"
+			title="{{ site.title }}"
+		/>
+
+		<meta name="generator" content="{{ eleventy.generator }}" />
+
+		{# Vite will handle CSS imports from JS - no need for separate CSS links #}
+	</head>
+	<body class="page-{{ page.fileSlug }}">
+		<a href="#main" id="skip-link" class="visually-hidden"
+			>Skip to main content</a
+		>
+
+		<header>
+			<a href="/" class="home-link">{{ site.title }}</a>
+
+			{#- Read more about `eleventy-navigation` at https://www.11ty.dev/docs/plugins/navigation/ #}
+			<nav>
+				<h2 class="visually-hidden">Top level navigation menu</h2>
+				<ul class="nav">
+					{%- for entry in collections.all | eleventyNavigation %}
+						<li class="nav-item">
+							<a
+								href="{{ entry.url }}"
+								{% if entry.url == page.url %}aria-current="page"{% endif %}
+								>{{ entry.title }}</a
+							>
+						</li>
+					{%- endfor %}
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors> {{ content | safe }} </heading-anchors>
+		</main>
+
+		<footer>
+			<p>
+				<em
+					>Built with
+					<a href="https://www.11ty.dev/">{{ eleventy.generator }}</a></em
+				>
+			</p>
+		</footer>
+
+		<!-- This page `{{ page.url }}` was built on {% currentBuildDate %} -->
+
+		{# Global JavaScript - Vite will process and bundle #}
+		{# User's main.js imports theme styles/scripts #}
+		<script type="module" src="/assets/scripts/main.js"></script>
+
+		{# Page-specific JavaScript bundles (opt-in via front matter) #}
+		{% if pageBundle %}
+			<script type="module" src="/assets/scripts/bundles/{{ pageBundle }}.js"></script>
+		{% endif %}
+		{% if pageBundles %}
+			{% for bundle in pageBundles %}
+				<script type="module" src="/assets/scripts/bundles/{{ bundle }}.js"></script>
+			{% endfor %}
+		{% endif %}
+	</body>
+</html>
