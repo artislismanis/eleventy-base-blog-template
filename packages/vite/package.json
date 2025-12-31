@@ -1,0 +1,59 @@
+{
+	"name": "@eleventy-themes/vite",
+	"version": "1.0.0",
+	"description": "Opinionated Vite integration with production optimizations for Eleventy themes",
+	"type": "module",
+	"main": "index.mjs",
+	"exports": {
+		".": "./index.mjs",
+		"./plugins": "./plugins/index.mjs",
+		"./plugins/*": "./plugins/*.mjs"
+	},
+	"files": [
+		"plugins/",
+		"index.mjs",
+		"config.mjs",
+		"README.md",
+		"LICENSE"
+	],
+	"keywords": [
+		"eleventy",
+		"eleventy-theme",
+		"vite",
+		"production-optimization",
+		"purgecss",
+		"critical-css",
+		"html-minification"
+	],
+	"author": "Artis Lismanis",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/artislismanis/eleventy-themes.git",
+		"directory": "packages/vite"
+	},
+	"peerDependencies": {
+		"vite": "^5.0.0 || ^6.0.0 || ^7.0.0",
+		"@11ty/eleventy-plugin-vite": "^7.0.0"
+	},
+	"peerDependenciesMeta": {
+		"purgecss": {
+			"optional": true
+		},
+		"critters": {
+			"optional": true
+		},
+		"html-minifier-terser": {
+			"optional": true
+		},
+		"node-html-parser": {
+			"optional": true
+		},
+		"glob": {
+			"optional": true
+		}
+	},
+	"engines": {
+		"node": ">=22"
+	}
+}

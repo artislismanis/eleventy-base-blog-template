@@ -1,59 +1,28 @@
 {
-	"name": "eleventy-base-blog-template",
-	"version": "2.0.0",
-	"description": "A convention-based Eleventy theme with self-describing metadata, @theme alias, auto-import, and extensible features",
+	"name": "eleventy-themes",
+	"version": "1.0.0",
+	"description": "Opinionated, build-agnostic theming system for Eleventy",
+	"private": true,
 	"type": "module",
-	"main": "lib/index.mjs",
-	"exports": {
-		".": "./lib/index.mjs",
-		"./theme.json": "./theme.json",
-		"./lib/*": "./lib/*.mjs",
-		"./layouts/*": "./layouts/*",
-		"./styles/*": "./styles/*",
-		"./scripts/*": "./scripts/*",
-		"./features/*": "./features/*"
-	},
-	"files": [
-		"lib/",
-		"layouts/",
-		"styles/",
-		"scripts/",
-		"features/",
-		"data/",
-		"public/",
-		"theme.json",
-		"README.md",
-		"LICENSE"
+	"workspaces": [
+		"packages/*"
 	],
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
 	"keywords": [
 		"eleventy",
 		"eleventy-theme",
 		"11ty",
-		"vite",
 		"static-site-generator",
-		"blog-theme",
-		"blog-template",
-		"cascade-system",
-		"feature-system"
+		"theming-system",
+		"cascade",
+		"features"
 	],
 	"author": "Artis Lismanis",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/artislismanis/eleventy-base-blog-template.git"
-	},
-	"bugs": {
-		"url": "https://github.com/artislismanis/eleventy-base-blog-template/issues"
-	},
-	"homepage": "https://github.com/artislismanis/eleventy-base-blog-template#readme",
-	"peerDependencies": {
-		"@11ty/eleventy": "^3.1.0",
-		"@11ty/eleventy-plugin-vite": "^7.0.0",
-		"luxon": "^3.7.0",
-		"sass-embedded": "^1.93.0",
-		"vite": "^7.1.0"
-	},
-	"engines": {
-		"node": ">=22"
+		"url": "git+https://github.com/artislismanis/eleventy-themes.git"
 	}
 }
