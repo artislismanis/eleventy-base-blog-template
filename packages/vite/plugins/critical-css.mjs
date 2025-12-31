@@ -4,21 +4,10 @@ import fs from 'fs/promises';
 import { glob } from 'glob';
 import Critters from 'critters';
 
-import { eleventyDirs } from '../eleventy.config.mjs';
-
-export async function generateCriticalCSS() {
-	// Check if critical CSS generation is enabled via environment variable
-	const isEnabled = process.env.GENERATE_CRITICAL_CSS === 'true';
-
-	if (!isEnabled) {
-		console.log('⏭️  Critical CSS skipped (disabled)');
-		return;
-	}
-
+export async function generateCriticalCSS(outputDir = '_site', options = {}) {
 	console.log('\n📦 Generating critical CSS...\n');
 
-	const { output } = eleventyDirs;
-	const htmlFiles = await glob(`${output}/**/*.html`);
+	const htmlFiles = await glob(`${outputDir}/**/*.html`);
 
 	if (htmlFiles.length === 0) {
 		console.log('⚠️  Critical CSS: No HTML files found to process');
@@ -26,7 +15,8 @@ export async function generateCriticalCSS() {
 	}
 
 	const critters = new Critters({
-		path: output,
+		path: outputDir,
+		...options,
 		publicPath: '/',
 		preload: 'swap',
 		inlineFonts: true,

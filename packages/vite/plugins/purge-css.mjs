@@ -4,11 +4,8 @@ import path from 'path';
 import { glob } from 'glob';
 import { PurgeCSS } from 'purgecss';
 
-import { eleventyDirs } from '../eleventy.config.mjs';
-
-export async function purgeCSSFiles() {
-	const { output } = eleventyDirs;
-	const cssFiles = glob.sync(`./${output}/assets/css/*.css`);
+export async function purgeCSSFiles(outputDir = '_site', options = {}) {
+	const cssFiles = glob.sync(`./${outputDir}/assets/css/*.css`);
 
 	if (cssFiles.length === 0) {
 		console.log('⚠️  PurgeCSS: No CSS files found to process');
@@ -24,7 +21,7 @@ export async function purgeCSSFiles() {
 			const originalSize = fs.statSync(file).size;
 
 			const results = await new PurgeCSS().purge({
-				content: [`./${output}/**/*.html`],
+				content: [`./${outputDir}/**/*.html`],
 				css: [file],
 				safelist: {
 					standard: [/^is-/, /^has-/, /^js-/, /^page-/],
@@ -47,15 +44,15 @@ export async function purgeCSSFiles() {
 			const newSize = fs.statSync(file).size;
 			const reduction = ((1 - newSize / originalSize) * 100).toFixed(1);
 
-			console.log(`  ✓ ${path.relative(output, file)} (${reduction}% smaller)`);
+			console.log(`  ✓ ${path.relative(outputDir, file)} (${reduction}% smaller)`);
 			successCount++;
 		} catch (error) {
 			errorCount++;
 			errors.push({
-				file: path.relative(output, file),
+				file: path.relative(outputDir, file),
 				error: error.message,
 			});
-			console.error(`  ✗ ${path.relative(output, file)}: ${error.message}`);
+			console.error(`  ✗ ${path.relative(outputDir, file)}: ${error.message}`);
 		}
 	}
 

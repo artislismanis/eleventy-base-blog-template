@@ -11,17 +11,17 @@ import { existsSync } from 'fs';
 import { glob } from 'glob';
 import { parse } from 'node-html-parser';
 
-import { eleventyDirs } from '../eleventy.config.mjs';
-
 /**
  * Validate links and images in built HTML
+ * @param {string} outputDir - Output directory to validate
+ * @param {Object} options - Validation options
+ * @param {boolean} options.throwOnError - Throw error if validation fails
  * @returns {Promise<{valid: boolean, errors: Array}>}
  */
-export async function validateLinks() {
+export async function validateLinks(outputDir = '_site', options = {}) {
 	console.log('\n🔗 Validating links and images...\n');
 
-	const { output } = eleventyDirs;
-	const htmlFiles = await glob(`${output}/**/*.html`);
+	const htmlFiles = await glob(`${outputDir}/**/*.html`);
 
 	const errors = [];
 	let totalLinks = 0;
@@ -32,7 +32,7 @@ export async function validateLinks() {
 			const html = await fs.readFile(htmlFile, 'utf-8');
 			const root = parse(html);
 
-			const relativePath = path.relative(output, htmlFile);
+			const relativePath = path.relative(outputDir, htmlFile);
 			const baseDir = path.dirname(htmlFile);
 
 			// Check internal links
@@ -166,6 +166,12 @@ export async function validateLinks() {
 		'\n💡 Tip: Fix broken links and missing images before deployment\n',
 	);
 
+	if (options.throwOnError) {
+		throw new Error(
+			`Link validation failed with ${errors.length} error(s). Fix issues above.`,
+		);
+	}
+
 	return { valid: false, errors };
 }
 
@@ -173,12 +179,6 @@ export async function validateLinks() {
  * Validate links and throw if invalid
  * Use this in build pipeline to fail fast
  */
-export async function validateLinksOrThrow() {
-	const { valid, errors } = await validateLinks();
-
-	if (!valid) {
-		throw new Error(
-			`Link validation failed with ${errors.length} error(s). Fix issues above.`,
-		);
-	}
+export async function validateLinksOrThrow(outputDir = '_site', options = {}) {
+	return validateLinks(outputDir, { ...options, throwOnError: true });
 }

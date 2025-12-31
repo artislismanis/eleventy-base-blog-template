@@ -31,30 +31,19 @@ export function createThemePlugin(themeMetadata, options = {}) {
 
 	return function themePlugin(eleventyConfig, userOptions = {}) {
 		const {
-			importMetaUrl,
-			projectRoot: userProjectRoot,
+			projectRoot = process.cwd(),
 			overridePaths,
 		} = userOptions;
 
-		// Auto-detect project root
-		const projectRoot = userProjectRoot ||
-			(importMetaUrl ? getDirname(importMetaUrl) : process.cwd());
-
 		// Configure template loader
-		const { configureNunjucks } = await import('./template-loader.mjs');
 		configureNunjucks(eleventyConfig, {
 			projectRoot,
 			themeName: themeMetadata.name,
 			overridePaths: overridePaths || themeMetadata.cascade?.defaultOverridePaths,
 		});
 
-		// Configure cascade systems
-		const { configureCascade } = await import('./cascade/index.mjs');
-		configureCascade(
-			eleventyConfig,
-			projectRoot,
-			overridePaths || themeMetadata.cascade?.defaultOverridePaths
-		);
+		// Configure cascade systems (passthrough copy, etc.)
+		// Note: The actual cascade resolution happens at runtime via the loader
 
 		// Register theme helpers (filters, shortcodes, transforms)
 		if (helpers.filters) {
@@ -75,11 +64,4 @@ export function createThemePlugin(themeMetadata, options = {}) {
 			});
 		}
 	};
-}
-
-// Helper for import.meta.url
-function getDirname(importMetaUrl) {
-	const { fileURLToPath } = await import('url');
-	const { dirname } = await import('path');
-	return dirname(fileURLToPath(importMetaUrl));
 }

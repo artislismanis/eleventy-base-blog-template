@@ -4,20 +4,17 @@ import fs from 'fs/promises';
 import { glob } from 'glob';
 import { minify } from 'html-minifier-terser';
 
-import { eleventyDirs } from '../eleventy.config.mjs';
-
-export async function minifyHTML() {
+export async function minifyHTML(outputDir = '_site', userOptions = {}) {
 	console.log('\n📦 Minifying HTML...\n');
 
-	const { output } = eleventyDirs;
-	const htmlFiles = await glob(`${output}/**/*.html`);
+	const htmlFiles = await glob(`${outputDir}/**/*.html`);
 
 	if (htmlFiles.length === 0) {
 		console.log('⚠️  HTML Minify: No HTML files found to process');
 		return;
 	}
 
-	const options = {
+	const defaultOptions = {
 		collapseBooleanAttributes: true,
 		collapseWhitespace: true,
 		conservativeCollapse: false,
@@ -40,6 +37,8 @@ export async function minifyHTML() {
 		useShortDoctype: true,
 	};
 
+	const options = { ...defaultOptions, ...userOptions };
+
 	let totalOriginalSize = 0;
 	let totalMinifiedSize = 0;
 	let successCount = 0;
@@ -59,15 +58,15 @@ export async function minifyHTML() {
 			totalMinifiedSize += minifiedSize;
 
 			const savings = ((1 - minifiedSize / originalSize) * 100).toFixed(1);
-			console.log(`✓ ${path.relative(output, file)} (${savings}% smaller)`);
+			console.log(`✓ ${path.relative(outputDir, file)} (${savings}% smaller)`);
 			successCount++;
 		} catch (error) {
 			errorCount++;
 			errors.push({
-				file: path.relative(output, file),
+				file: path.relative(outputDir, file),
 				error: error.message,
 			});
-			console.error(`✗ ${path.relative(output, file)}: ${error.message}`);
+			console.error(`✗ ${path.relative(outputDir, file)}: ${error.message}`);
 		}
 	}
 
