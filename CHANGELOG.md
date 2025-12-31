@@ -5,6 +5,120 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Breaking Changes
+
+#### Bundles → Features Rename
+- **BREAKING:** Renamed "bundles" to "features" throughout codebase
+  - Directory: `bundles/` → `features/`
+  - API: `getPageBundleEntries()` → `getFeatureEntries()`
+  - Metadata: `metadata.bundles` → `metadata.features`
+  - Override paths: `overrides/bundles` → `overrides/features`
+  - Package exports: `./bundles/*` → `./features/*`
+
+#### Colocated Feature Structure
+- **BREAKING:** Features now use self-contained folder structure
+  - **Before:** `bundles/code-highlighting.js` + `styles/bundles/code-highlighting.scss`
+  - **After:** `features/code-highlighting/` folder containing:
+    - `index.js` - Feature logic
+    - `index.auto.js` - Auto-init variant
+    - `styles.scss` - Feature styles
+  - Benefits: Self-contained, easier to understand/share/delete
+  - Aligns with modern component patterns (React/Vue)
+
+### Added
+
+#### Theme Specification System (Phase 1)
+- **theme.json** - Machine-readable theme specification following proposed standard
+  - Theme metadata (name, version, author, license)
+  - Directory structure definition
+  - Cascade system configuration
+  - Feature declarations (renamed from bundles)
+  - Layout documentation
+  - CSS custom properties listing
+  - API usage documentation
+- **THEME_SPEC.md** - Complete documentation of specification compliance
+- **THEME_SYSTEM_V2.md** - Refined proposal with build-agnostic architecture
+- **Export for theme.json** - Added to package.json exports for programmatic access
+
+### Changed
+- **lib/ Organization** - Code reorganized into logical subdirectories:
+  - `lib/cascade/` - Cascade resolution system (5 files)
+    - `bundles.mjs` → `features.mjs`
+  - `lib/eleventy/` - Eleventy-specific features (4 files)
+  - `lib/build/` - Build tool integration (2 files)
+    - `bundle-entries.mjs` → `feature-entries.mjs`
+  - `lib/utils/` - Utilities (1 file)
+- **Shared Resolver** - Created `lib/cascade/resolver.mjs` eliminating 125+ lines of duplication
+- **theme.json structure**:
+  - `"features"` (capabilities) → `"capabilities"`
+  - `"bundles"` → `"themeFeatures"`
+  - `"bundleSystem"` → `"featureSystem"`
+  - `"perBundle"` → `"perFeature"`
+- **Package keywords** - Added "cascade-system" and "feature-system"
+
+### Removed
+- **lib/create-config.mjs** - Removed incorrect API approach (took over entire config)
+- **eleventy.config.CREATECONFIG.mjs** - Removed test file using wrong approach
+- **Backward compatibility exports** - Removed `getPageBundleEntries` (use `getFeatureEntries`)
+- **styles/bundles/** - Styles now colocated with features
+
+### Fixed
+- **sortAlphabetically() Filter** - Fixed missing return statement and reversed parameters
+
+### Documentation
+- **THEME_SPEC.md** - Theme specification compliance documentation
+- **THEME_SYSTEM_PROPOSAL.md** - Initial proposal for reusable theming framework
+- **THEME_SYSTEM_V2.md** - Refined proposal with build-agnostic core
+- **API_COMPARISON.md** - Comparison of Manual vs Plugin vs createConfig APIs
+- **ARCHITECTURE_DECISION.md** - Analysis of architectural decisions
+- **IMPLEMENTATION_STATUS.md** - Project roadmap and progress tracker
+
+### Migration Guide
+
+#### Updating from Previous Version
+
+**File Structure:**
+```bash
+# Rename directory
+mv bundles features
+
+# Restructure to colocated pattern
+mkdir features/code-highlighting
+mv features/code-highlighting.js features/code-highlighting/index.js
+mv features/code-highlighting.auto.js features/code-highlighting/index.auto.js
+mv styles/bundles/code-highlighting.scss features/code-highlighting/styles.scss
+```
+
+**Code Updates:**
+```javascript
+// Before
+import { getPageBundleEntries } from 'eleventy-base-blog-template';
+const entries = getPageBundleEntries(__dirname, {
+  bundles: 'src/bundles'
+});
+
+// After
+import { getFeatureEntries } from 'eleventy-base-blog-template';
+const entries = getFeatureEntries(__dirname, {
+  features: 'src/features'
+});
+```
+
+**Import Paths:**
+```javascript
+// Before
+import { init } from '@theme/bundles/code-highlighting.js';
+
+// After
+import { init } from '@theme/features/code-highlighting/index.js';
+// Or simpler (index.js is implied):
+import { init } from '@theme/features/code-highlighting';
+```
+
+---
+
 ## [2.0.0] - 2025-01-01
 
 ### 🎉 Major Release - Complete Rewrite
@@ -40,8 +154,10 @@ Version 2.0 is a complete architectural overhaul with breaking changes. See [MIG
 - **Bundle-Scoped Naming** - `--code-*`, `--gallery-*` to avoid collisions
 
 #### Data Cascade
+- **Automatic Registration** - Theme data files automatically registered via `addGlobalData()`
 - **Theme Defaults** - `data/navigation.js` and `data/site.js` with sensible defaults
-- **User Override** - Create same filename in `content/_data/` to replace
+- **User Override** - Create same filename in `content/_data/` to automatically replace theme defaults
+- **Native Eleventy Cascade** - User files in `_data/` directory take precedence over theme defaults
 - **Programmatic Access** - `resolveDataFile()`, `dataFileExists()`, `getAvailableDataFiles()`
 
 #### Static Assets Cascade
@@ -78,6 +194,8 @@ Version 2.0 is a complete architectural overhaul with breaking changes. See [MIG
 - **Manual Nunjucks Config** - Auto-configured by `init()`
 - **Hard-coded Paths** - All paths now configurable
 - **initTheme()** - Replaced by `theme.init()` (cleaner API)
+- **PurgeCSS/Critical CSS Utilities** - Production optimizations belong in content repo, not theme package
+- **utils/ and config/ directories** - Consolidated into `lib/` for simpler structure
 
 ### Fixed
 
@@ -111,7 +229,7 @@ Version 2.0 is a complete architectural overhaul with breaking changes. See [MIG
 - Per-page bundle support
 - Cascade override system
 - Filters, shortcodes, transforms
-- PurgeCSS and critical CSS utilities
+- PurgeCSS and critical CSS utilities (removed in v2 - belong in content repo)
 
 ---
 

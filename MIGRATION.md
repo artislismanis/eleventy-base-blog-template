@@ -28,8 +28,8 @@ npm install eleventy-base-blog-template@^2.0.0
 **Before (v1):**
 ```javascript
 import { initTheme } from 'eleventy-base-blog-template';
-import { getThemeViteConfig } from 'eleventy-base-blog-template/config/vite.mjs';
-import { getPageBundleEntries } from 'eleventy-base-blog-template/utils/get-page-bundles.mjs';
+import { getThemeViteConfig } from 'eleventy-base-blog-template/lib/vite.mjs';
+import { getPageBundleEntries } from 'eleventy-base-blog-template/lib/get-page-bundles.mjs';
 
 export default function (eleventyConfig) {
   initTheme(eleventyConfig, {
@@ -193,16 +193,25 @@ Check for:
 
 **v1:** No theme defaults, user must create all data files
 
-**v2:** Theme provides defaults, user overrides by creating same filename
+**v2:** Theme provides defaults, automatically available via `theme.init()`
+
+How it works:
+1. Theme registers default data files (`navigation.js`, `site.js`) using `addGlobalData()`
+2. Eleventy's native data cascade: `_data/` directory files > `addGlobalData()`
+3. Create `content/_data/<filename>` to override theme default - no other steps needed
 
 ```javascript
 // Theme provides data/site.js with defaults
-// User overrides by creating content/_data/site.js
+// To override: create content/_data/site.js
 export default {
-  title: 'My Blog',  // Replaces theme default
+  title: 'My Blog',  // Replaces theme default completely
+  description: 'My custom description',
+  url: 'https://myblog.com',
   // ...
 };
 ```
+
+**Important:** Your override completely replaces the theme default (no merging). Copy the theme file structure to ensure all required fields are present.
 
 ### Static Assets
 
@@ -245,7 +254,7 @@ init({ lineNumbers: true });
 **Solution:** Update to v2 import patterns:
 ```javascript
 // ❌ v1
-import { getThemeViteConfig } from 'eleventy-base-blog-template/config/vite.mjs';
+import { getThemeViteConfig } from 'eleventy-base-blog-template/lib/vite.mjs';
 
 // ✅ v2
 import { getThemeViteConfig } from 'eleventy-base-blog-template';
