@@ -1,7 +1,7 @@
 {
 	"name": "eleventy-base-blog-template",
-	"version": "1.0.0",
-	"description": "A minimal Eleventy blog theme with Vite, per-page bundles, and cascade override system",
+	"version": "2.0.0",
+	"description": "A convention-based Eleventy theme with self-describing metadata, @theme alias, auto-import, and extensible bundles",
 	"type": "module",
 	"main": "lib/index.mjs",
 	"exports": {
@@ -10,6 +10,7 @@
 		"./layouts/*": "./layouts/*",
 		"./styles/*": "./styles/*",
 		"./scripts/*": "./scripts/*",
+		"./bundles/*": "./bundles/*",
 		"./utils/*": "./utils/*.mjs",
 		"./config/*": "./config/*.mjs"
 	},
@@ -18,6 +19,9 @@
 		"layouts/",
 		"styles/",
 		"scripts/",
+		"bundles/",
+		"data/",
+		"public/",
 		"utils/",
 		"config/",
 		"README.md",

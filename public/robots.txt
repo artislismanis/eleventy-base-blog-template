@@ -1,0 +1,7 @@
+# Theme default robots.txt
+# Override by creating public/robots.txt in your content repo
+
+User-agent: *
+Allow: /
+
+Sitemap: /sitemap.xml
