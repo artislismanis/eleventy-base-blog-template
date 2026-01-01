@@ -6,7 +6,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { resolveOverridePaths, DEFAULT_ASSET_ENTRIES } from '@eleventy-themes/core';
+import { resolveOverridePaths, DEFAULT_ASSET_ENTRIES, getThemeRoot } from '@eleventy-themes/core';
 import { themeAutoImportPlugin } from './plugins/auto-import.mjs';
 import { runOptimizations } from './utils/plugin-orchestrator.mjs';
 
@@ -64,7 +64,7 @@ export function createThemeViteConfig(themeMetadata, options = {}) {
 	const themeName = themeMetadata.name;
 	const resolvedOverridePaths = resolveOverridePaths(themeMetadata, overridePaths);
 
-	const themeRoot = path.join(projectRoot, 'node_modules', themeName);
+	const themeRoot = getThemeRoot(projectRoot, themeName);
 	const stylesPath = resolvedOverridePaths.styles;
 	const scriptsPath = resolvedOverridePaths.scripts;
 

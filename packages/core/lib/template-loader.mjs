@@ -1,5 +1,6 @@
 import Nunjucks from 'nunjucks';
 import path from 'path';
+import { getThemeRoot } from './cascade/resolver.mjs';
 
 /**
  * Custom Nunjucks loader that supports @theme/ prefix
@@ -62,7 +63,7 @@ export function configureTemplateEngine(eleventyConfig, options = {}) {
 		additionalPaths = [],
 	} = options;
 
-	const themeBasePath = path.join(projectRoot, 'node_modules', themeName);
+	const themeBasePath = getThemeRoot(projectRoot, themeName);
 
 	// Build search paths in priority order (first match wins)
 	// User paths come first, theme paths are fallback

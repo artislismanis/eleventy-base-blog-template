@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { resolveOverridePaths } from './defaults.mjs';
+import { getThemeRoot } from './cascade/resolver.mjs';
 
 /**
  * Validate theme installation and provide helpful errors
@@ -36,7 +37,7 @@ export function validateTheme(projectRoot, themeMetadata, overridePaths = {}) {
 
 	// Check required theme directories exist
 	const requiredThemeDirs = ['layouts', 'styles', 'scripts'];
-	const themeRoot = path.join(projectRoot, 'node_modules', themeMetadata.name);
+	const themeRoot = getThemeRoot(projectRoot, themeMetadata.name);
 
 	if (!fs.existsSync(themeRoot)) {
 		errors.push(
@@ -190,7 +191,7 @@ export function validateComponent(type, name, projectRoot, themeMetadata, overri
 	const layoutsPath = resolved.layouts;
 	const dataPath = resolved.data;
 
-	const themeRoot = path.join(projectRoot, 'node_modules', themeMetadata.name);
+	const themeRoot = getThemeRoot(projectRoot, themeMetadata.name);
 
 	switch (type) {
 		case 'layout': {

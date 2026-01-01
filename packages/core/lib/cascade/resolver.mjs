@@ -2,7 +2,7 @@
  * Shared cascade resolution utilities
  *
  * Provides a unified API for resolving resources with user override support.
- * Used by data files, bundles, layouts, and static assets.
+ * Used by data files, features, layouts, and static assets.
  */
 
 import fs from 'fs';

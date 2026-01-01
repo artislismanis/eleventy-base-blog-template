@@ -12,6 +12,7 @@ import fs from 'fs';
 // Import for local use
 import { configureTemplateEngine as _configureTemplateEngine } from './template-loader.mjs';
 import { resolveOverridePaths as _resolveOverridePaths } from './defaults.mjs';
+import { getThemeRoot } from './cascade/resolver.mjs';
 
 // Re-export cascade utilities
 export * from './cascade/index.mjs';
@@ -23,7 +24,7 @@ export { configureTemplateEngine, ThemeAwareLoader } from './template-loader.mjs
 export { validateTheme, logValidation, validateComponent } from './validate.mjs';
 
 // Re-export framework defaults
-export { DEFAULT_OVERRIDE_PATHS, resolveOverridePaths } from './defaults.mjs';
+export { DEFAULT_OVERRIDE_PATHS, DEFAULT_ASSET_ENTRIES, resolveOverridePaths } from './defaults.mjs';
 
 /**
  * Generate Eleventy dir configuration for theme with cascade support
@@ -60,7 +61,7 @@ export function generateDirConfig(themeMetadata, options = {}) {
 	} = options;
 
 	const themeName = themeMetadata.name;
-	const themeLayoutsPath = path.join(projectRoot, 'node_modules', themeName, 'layouts');
+	const themeLayoutsPath = path.join(getThemeRoot(projectRoot, themeName), 'layouts');
 
 	// Point to theme layouts - ThemeAwareLoader provides cascade via Nunjucks search paths
 	// User layouts are found via the loader's search paths (user-first)
@@ -111,7 +112,7 @@ export function createThemePlugin(themeMetadata, options = {}) {
 		// This allows Eleventy to find theme layouts without hardcoding paths in user config
 		// User overrides take precedence over theme layouts
 		if (themeMetadata.layouts && Array.isArray(themeMetadata.layouts)) {
-			const themePackagePath = path.join(projectRoot, 'node_modules', themeMetadata.name);
+			const themePackagePath = getThemeRoot(projectRoot, themeMetadata.name);
 			const userLayoutsPath = resolvedOverridePaths.layouts;
 
 			themeMetadata.layouts.forEach(layout => {

@@ -6,18 +6,18 @@
  *
  * Usage:
  *   // Basic (use defaults)
- *   import { init } from '@theme/bundles/code-highlighting.js';
+ *   import { init } from '@theme/features/code-highlighting/index.js';
  *   init();
  *
  *   // With customization
- *   import { init, defaultConfig } from '@theme/bundles/code-highlighting.js';
+ *   import { init, defaultConfig } from '@theme/features/code-highlighting/index.js';
  *   init({ ...defaultConfig, lineNumbers: true });
  *
  * CSS Custom Properties (bundle-scoped):
  *   --code-bg, --code-fg, --code-font-family, --code-font-size,
  *   --code-line-height, --code-border-radius, --code-copy-button-bg
  *
- * See styles/bundles/code-highlighting.scss for full CSS custom properties list.
+ * See styles/features/code-highlighting.scss for full CSS custom properties list.
  */
 
 // Import feature styles
