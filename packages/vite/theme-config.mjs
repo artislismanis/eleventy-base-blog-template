@@ -6,6 +6,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { resolveOverridePaths, DEFAULT_ASSET_ENTRIES } from '@eleventy-themes/core';
 import { themeAutoImportPlugin } from './plugins/auto-import.mjs';
 import { runOptimizations } from './utils/plugin-orchestrator.mjs';
 
@@ -61,15 +62,15 @@ export function createThemeViteConfig(themeMetadata, options = {}) {
 	}
 
 	const themeName = themeMetadata.name;
-	const resolvedOverridePaths = overridePaths || themeMetadata.cascade?.defaultOverridePaths || {};
+	const resolvedOverridePaths = resolveOverridePaths(themeMetadata, overridePaths);
 
 	const themeRoot = path.join(projectRoot, 'node_modules', themeName);
-	const stylesPath = resolvedOverridePaths.styles || 'overrides/styles';
-	const scriptsPath = resolvedOverridePaths.scripts || 'overrides/scripts';
+	const stylesPath = resolvedOverridePaths.styles;
+	const scriptsPath = resolvedOverridePaths.scripts;
 
-	// Get theme assets entry points from metadata
-	const stylesEntry = themeMetadata.assets?.styles?.entry || 'styles/main.scss';
-	const scriptsEntry = themeMetadata.assets?.scripts?.entry || 'scripts/main.js';
+	// Get theme assets entry points from metadata (or use framework defaults)
+	const stylesEntry = themeMetadata.assets?.styles?.entry || DEFAULT_ASSET_ENTRIES.styles;
+	const scriptsEntry = themeMetadata.assets?.scripts?.entry || DEFAULT_ASSET_ENTRIES.scripts;
 
 	// Build aliases for feature entry points
 	const featureAliases = {};

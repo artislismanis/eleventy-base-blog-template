@@ -11,6 +11,7 @@ import fs from 'fs';
 
 // Import for local use
 import { configureTemplateEngine as _configureTemplateEngine } from './template-loader.mjs';
+import { resolveOverridePaths as _resolveOverridePaths } from './defaults.mjs';
 
 // Re-export cascade utilities
 export * from './cascade/index.mjs';
@@ -21,8 +22,8 @@ export { configureTemplateEngine, ThemeAwareLoader } from './template-loader.mjs
 // Re-export validation
 export { validateTheme, logValidation, validateComponent } from './validate.mjs';
 
-// Re-export metadata helper
-export { metadata } from './metadata.mjs';
+// Re-export framework defaults
+export { DEFAULT_OVERRIDE_PATHS, resolveOverridePaths } from './defaults.mjs';
 
 /**
  * Generate Eleventy dir configuration for theme with cascade support
@@ -96,11 +97,14 @@ export function createThemePlugin(themeMetadata, options = {}) {
 			overridePaths,
 		} = userOptions;
 
+		// Resolve override paths using utility
+		const resolvedOverridePaths = _resolveOverridePaths(themeMetadata, overridePaths);
+
 		// Configure template loader
 		_configureTemplateEngine(eleventyConfig, {
 			projectRoot,
 			themeName: themeMetadata.name,
-			overridePaths: overridePaths || themeMetadata.cascade?.defaultOverridePaths,
+			overridePaths: resolvedOverridePaths,
 		});
 
 		// Register layout aliases for theme layouts with cascade support
@@ -108,8 +112,7 @@ export function createThemePlugin(themeMetadata, options = {}) {
 		// User overrides take precedence over theme layouts
 		if (themeMetadata.layouts && Array.isArray(themeMetadata.layouts)) {
 			const themePackagePath = path.join(projectRoot, 'node_modules', themeMetadata.name);
-			const resolvedOverridePaths = overridePaths || themeMetadata.cascade?.defaultOverridePaths || {};
-			const userLayoutsPath = resolvedOverridePaths.layouts || 'overrides/layouts';
+			const userLayoutsPath = resolvedOverridePaths.layouts;
 
 			themeMetadata.layouts.forEach(layout => {
 				const layoutFilename = path.basename(layout.path);

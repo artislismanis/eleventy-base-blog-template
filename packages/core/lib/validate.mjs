@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { metadata } from './metadata.mjs';
+import { resolveOverridePaths } from './defaults.mjs';
 
 /**
  * Validate theme installation and provide helpful errors
@@ -25,22 +25,23 @@ import { metadata } from './metadata.mjs';
  *   process.exit(1);
  * }
  */
-export function validateTheme(projectRoot, overridePaths = {}) {
+export function validateTheme(projectRoot, themeMetadata, overridePaths = {}) {
 	const errors = [];
 	const warnings = [];
 
 	// Get configured paths
-	const scriptsPath = overridePaths.scripts || metadata.defaultOverridePaths.scripts;
-	const layoutsPath = overridePaths.layouts || metadata.defaultOverridePaths.layouts;
+	const resolved = resolveOverridePaths(themeMetadata, overridePaths);
+	const scriptsPath = resolved.scripts;
+	const layoutsPath = resolved.layouts;
 
 	// Check required theme directories exist
 	const requiredThemeDirs = ['layouts', 'styles', 'scripts'];
-	const themeRoot = path.join(projectRoot, 'node_modules', metadata.name);
+	const themeRoot = path.join(projectRoot, 'node_modules', themeMetadata.name);
 
 	if (!fs.existsSync(themeRoot)) {
 		errors.push(
 			`Theme package not found at: ${themeRoot}\n` +
-			`  Did you run 'npm install ${metadata.name}'?`
+			`  Did you run 'npm install ${themeMetadata.name}'?`
 		);
 		// Can't continue without theme installed
 		return { errors, warnings, isValid: false };
@@ -98,18 +99,16 @@ export function validateTheme(projectRoot, overridePaths = {}) {
 	if (fs.existsSync(mainEntry)) {
 		const mainContent = fs.readFileSync(mainEntry, 'utf-8');
 		const hasManualImport =
-			mainContent.includes(`import '${metadata.name}/styles`) ||
-			mainContent.includes(`import '${metadata.name}/scripts`) ||
-			mainContent.includes(`import 'eleventy-base-blog-template/styles`) ||
-			mainContent.includes(`import 'eleventy-base-blog-template/scripts`);
+			mainContent.includes(`import '${themeMetadata.name}/styles`) ||
+			mainContent.includes(`import '${themeMetadata.name}/scripts`);
 
 		if (hasManualImport) {
 			warnings.push(
 				`Found manual theme imports in ${scriptsPath}/main.js\n` +
-				`  Theme v2 auto-imports styles and scripts.\n` +
+				`  Theme auto-imports styles and scripts.\n` +
 				`  You can remove these import statements:\n` +
-				`    - import '${metadata.name}/styles/...';\n` +
-				`    - import '${metadata.name}/scripts/...';\n` +
+				`    - import '${themeMetadata.name}/styles/...';\n` +
+				`    - import '${themeMetadata.name}/scripts/...';\n` +
 				`  They are now automatically included by the build system.`
 			);
 		}
@@ -186,12 +185,12 @@ export function logValidation(validation, options = {}) {
  * @param {Object} overridePaths - Override paths configuration
  * @returns {Object} { exists, path, source } or { exists: false }
  */
-export function validateComponent(type, name, projectRoot, overridePaths = {}) {
-	const layoutsPath = overridePaths.layouts || metadata.defaultOverridePaths.layouts;
-	const bundlesPath = overridePaths.bundles || metadata.defaultOverridePaths.bundles;
-	const dataPath = overridePaths.data || metadata.defaultOverridePaths.data;
+export function validateComponent(type, name, projectRoot, themeMetadata, overridePaths = {}) {
+	const resolved = resolveOverridePaths(themeMetadata, overridePaths);
+	const layoutsPath = resolved.layouts;
+	const dataPath = resolved.data;
 
-	const themeRoot = path.join(projectRoot, 'node_modules', metadata.name);
+	const themeRoot = path.join(projectRoot, 'node_modules', themeMetadata.name);
 
 	switch (type) {
 		case 'layout': {
@@ -203,22 +202,6 @@ export function validateComponent(type, name, projectRoot, overridePaths = {}) {
 
 			// Check theme
 			const themePath = path.join(themeRoot, 'layouts', `${name}.njk`);
-			if (fs.existsSync(themePath)) {
-				return { exists: true, path: themePath, source: 'theme' };
-			}
-
-			return { exists: false };
-		}
-
-		case 'bundle': {
-			// Check user first
-			const userPath = path.join(projectRoot, bundlesPath, `${name}.js`);
-			if (fs.existsSync(userPath)) {
-				return { exists: true, path: userPath, source: 'user' };
-			}
-
-			// Check theme
-			const themePath = path.join(themeRoot, 'bundles', `${name}.js`);
 			if (fs.existsSync(themePath)) {
 				return { exists: true, path: themePath, source: 'theme' };
 			}

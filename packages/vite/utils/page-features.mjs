@@ -6,7 +6,7 @@
  */
 
 import path from 'path';
-import { getAvailableFeatures } from '@eleventy-themes/core';
+import { getAvailableFeatures, resolveOverridePaths } from '@eleventy-themes/core';
 
 // Re-export for convenience
 export { getAvailableFeatures } from '@eleventy-themes/core';
@@ -40,7 +40,8 @@ export { getAvailableFeatures } from '@eleventy-themes/core';
  */
 export function getFeatureEntries(projectRoot, themeMetadata, overridePaths) {
 	// Core handles all cascade logic - we just get the scripts path for main.js
-	const scriptsPath = themeMetadata.cascade?.defaultOverridePaths?.scripts || 'overrides/scripts';
+	const resolved = resolveOverridePaths(themeMetadata, overridePaths);
+	const scriptsPath = resolved.scripts;
 
 	const entries = {
 		// Main entry point (always included)

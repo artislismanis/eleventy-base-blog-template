@@ -2,204 +2,21 @@
 	"$schema": "https://eleventy-themes.dev/schema/theme.json",
 	"name": "@eleventy-themes/base-blog",
 	"version": "2.0.0",
-	"description": "A convention-based Eleventy theme with self-describing metadata, @theme alias, auto-import, and extensible features",
-	"author": "Artis Lismanis",
-	"license": "MIT",
-	"homepage": "https://github.com/artislismanis/eleventy-base-blog-template",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/artislismanis/eleventy-base-blog-template.git"
-	},
-
-	"engine": {
-		"eleventy": "^3.1.0",
-		"node": ">=22"
-	},
-
-	"structure": {
-		"layouts": "layouts",
-		"partials": "layouts/partials",
-		"styles": "styles",
-		"scripts": "scripts",
-		"features": "features",
-		"data": "data",
-		"public": "public"
-	},
-
-	"cascade": {
-		"enabled": true,
-		"defaultOverridePaths": {
-			"layouts": "overrides/layouts",
-			"features": "overrides/features",
-			"styles": "overrides/styles",
-			"scripts": "overrides/scripts",
-			"data": "content/_data",
-			"public": "public"
-		},
-		"resolution": "user-first"
-	},
-
-	"capabilities": {
-		"templateEngines": ["njk"],
-		"buildTools": ["vite"],
-		"featureSystem": true,
-		"dataCascade": true,
-		"assetCascade": true,
-		"themeAlias": true,
-		"autoImport": true
-	},
-
-	"layouts": [
-		{
-			"name": "base",
-			"path": "layouts/base.njk",
-			"description": "Base layout with HTML structure, meta tags, and feature loading",
-			"extendable": true
-		},
-		{
-			"name": "home",
-			"path": "layouts/home.njk",
-			"description": "Homepage layout extending base",
-			"extends": "base"
-		},
-		{
-			"name": "post",
-			"path": "layouts/post.njk",
-			"description": "Blog post layout with metadata and content",
-			"extends": "base"
-		}
-	],
+	"description": "Minimal blog theme for Eleventy",
 
 	"themeFeatures": [
 		{
 			"name": "code-highlighting",
-			"entry": "features/code-highlighting/index.js",
-			"auto": "features/code-highlighting/index.auto.js",
-			"styles": "features/code-highlighting/styles.scss",
-			"description": "Syntax highlighting for code blocks",
-			"cssVariables": [
-				"--code-bg-color",
-				"--code-text-color",
-				"--code-border-radius",
-				"--code-padding",
-				"--code-font-family",
-				"--code-font-size",
-				"--code-line-height"
-			]
-		}
-	],
-
-	"data": [
-		{
-			"name": "navigation",
-			"path": "data/navigation.js",
-			"description": "Default navigation menu structure"
-		},
-		{
-			"name": "site",
-			"path": "data/site.js",
-			"description": "Default site metadata and configuration"
+			"entry": "features/code-highlighting/index.js"
 		}
 	],
 
 	"assets": {
 		"styles": {
-			"entry": "styles/main.scss",
-			"preprocessor": "sass"
+			"entry": "styles/main.scss"
 		},
 		"scripts": {
-			"entry": "scripts/main.js",
-			"format": "esm"
-		},
-		"static": [
-			"public/favicon.svg",
-			"public/robots.txt"
-		]
-	},
-
-	"filters": [
-		"readableDate",
-		"htmlDateString",
-		"head",
-		"min",
-		"sortAlphabetically",
-		"getAllTags",
-		"filterTagList"
-	],
-
-	"shortcodes": [
-		"year",
-		"image"
-	],
-
-	"transforms": [],
-
-	"configuration": {
-		"api": "plugin",
-		"setup": {
-			"import": "import theme from 'eleventy-base-blog-template';",
-			"usage": "eleventyConfig.addPlugin(theme.plugin, { importMetaUrl: import.meta.url });"
-		},
-		"customization": {
-			"filters": true,
-			"shortcodes": true,
-			"transforms": true,
-			"overridePaths": true,
-			"viteConfig": true
+			"entry": "scripts/main.js"
 		}
-	},
-
-	"dependencies": {
-		"peer": {
-			"@11ty/eleventy": "^3.1.0",
-			"@11ty/eleventy-plugin-vite": "^7.0.0",
-			"luxon": "^3.7.0",
-			"sass-embedded": "^1.93.0",
-			"vite": "^7.1.0"
-		}
-	},
-
-	"cssCustomProperties": {
-		"typography": [
-			"--font-family-base",
-			"--font-family-heading",
-			"--font-family-mono",
-			"--font-size-base",
-			"--line-height-base"
-		],
-		"colors": [
-			"--color-primary",
-			"--color-secondary",
-			"--color-background",
-			"--color-text",
-			"--color-link"
-		],
-		"spacing": [
-			"--spacing-unit",
-			"--container-max-width"
-		],
-		"perFeature": {
-			"code-highlighting": [
-				"--code-bg-color",
-				"--code-text-color",
-				"--code-border-radius",
-				"--code-padding",
-				"--code-font-family",
-				"--code-font-size",
-				"--code-line-height"
-			]
-		}
-	},
-
-	"keywords": [
-		"eleventy",
-		"eleventy-theme",
-		"11ty",
-		"vite",
-		"static-site-generator",
-		"blog-theme",
-		"blog-template",
-		"cascade-system",
-		"feature-system"
-	]
+	}
 }

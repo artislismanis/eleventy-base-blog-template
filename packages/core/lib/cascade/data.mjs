@@ -8,12 +8,11 @@
 
 import path from 'path';
 import fs from 'fs';
-import { metadata } from '../metadata.mjs';
+import { resolveOverridePaths } from '../defaults.mjs';
 import {
 	resolveResource,
 	scanWithCascade,
 	resourceExists,
-	getOverridePath,
 	getThemeRoot,
 } from './resolver.mjs';
 
@@ -38,9 +37,10 @@ import {
 export function configureDataCascade(
 	eleventyConfig,
 	projectRoot,
+	themeMetadata,
 	overridePaths = {},
 ) {
-	const availableData = getAvailableDataFiles(projectRoot, overridePaths);
+	const availableData = getAvailableDataFiles(projectRoot, themeMetadata, overridePaths);
 
 	availableData.forEach((fileInfo, filename) => {
 		// Only register theme data files (not user files or overrides)
@@ -71,11 +71,12 @@ export function configureDataCascade(
  * @param {Object} overridePaths - Override paths configuration
  * @returns {Object} Paths { themeDataPath, userDataPath }
  */
-export function mergeDataFiles(projectRoot, overridePaths = {}) {
-	const dataDir = getOverridePath(overridePaths, 'data');
-	const themeRoot = getThemeRoot(projectRoot);
+export function mergeDataFiles(projectRoot, themeMetadata, overridePaths = {}) {
+	const resolved = resolveOverridePaths(themeMetadata, overridePaths);
+	const dataDir = resolved.data;
+	const themeRoot = getThemeRoot(projectRoot, themeMetadata.name);
 
-	const themeDataPath = path.join(themeRoot, metadata.paths.data);
+	const themeDataPath = path.join(themeRoot, 'data');
 	const userDataPath = path.join(projectRoot, dataDir);
 
 	// Check if theme data directory exists
@@ -125,10 +126,12 @@ export function mergeDataFiles(projectRoot, overridePaths = {}) {
  *   console.log(nav.default);
  * }
  */
-export function resolveDataFile(filename, projectRoot, overridePaths = {}) {
+export function resolveDataFile(filename, projectRoot, themeMetadata, overridePaths = {}) {
+	const resolved = resolveOverridePaths(themeMetadata, overridePaths);
 	const result = resolveResource({
 		projectRoot,
-		overridePaths,
+		themeName: themeMetadata.name,
+		resolvedOverridePaths: resolved,
 		resourceType: 'data',
 		filename,
 		throwOnMissing: false,
@@ -142,11 +145,13 @@ export function resolveDataFile(filename, projectRoot, overridePaths = {}) {
  *
  * @param {string} filename - Data file name
  * @param {string} projectRoot - Path to content repo root
+ * @param {Object} themeMetadata - Theme metadata object
  * @param {Object} overridePaths - Override paths configuration
  * @returns {boolean} True if file exists
  */
-export function dataFileExists(filename, projectRoot, overridePaths = {}) {
-	return resourceExists(projectRoot, overridePaths, 'data', filename);
+export function dataFileExists(filename, projectRoot, themeMetadata, overridePaths = {}) {
+	const resolved = resolveOverridePaths(themeMetadata, overridePaths);
+	return resourceExists(projectRoot, themeMetadata.name, resolved, 'data', filename);
 }
 
 /**
@@ -155,15 +160,18 @@ export function dataFileExists(filename, projectRoot, overridePaths = {}) {
  * Returns information about all data files with source tracking.
  *
  * @param {string} projectRoot - Path to content repo root
+ * @param {Object} themeMetadata - Theme metadata object
  * @param {Object} overridePaths - Override paths configuration
  * @returns {Map<string, Object>} Map of filename to file info
  *   Each file info contains: { name, source, path }
  *   Source is: 'theme', 'user', or 'override'
  */
-export function getAvailableDataFiles(projectRoot, overridePaths = {}) {
+export function getAvailableDataFiles(projectRoot, themeMetadata, overridePaths = {}) {
+	const resolved = resolveOverridePaths(themeMetadata, overridePaths);
 	return scanWithCascade({
 		projectRoot,
-		overridePaths,
+		themeName: themeMetadata.name,
+		resolvedOverridePaths: resolved,
 		resourceType: 'data',
 		filter: (file) => file.endsWith('.js') || file.endsWith('.json'),
 	});

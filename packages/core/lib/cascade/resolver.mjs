@@ -7,47 +7,63 @@
 
 import fs from 'fs';
 import path from 'path';
-import { metadata } from '../metadata.mjs';
+import { DEFAULT_OVERRIDE_PATHS } from '../defaults.mjs';
 
 /**
  * Get theme root directory
  *
  * @param {string} projectRoot - Content repo root
+ * @param {string} themeName - Theme package name
  * @returns {string} Path to theme package
  */
-export function getThemeRoot(projectRoot) {
-	return path.join(projectRoot, 'node_modules', metadata.name);
+export function getThemeRoot(projectRoot, themeName) {
+	return path.join(projectRoot, 'node_modules', themeName);
 }
+
+/**
+ * Default theme resource paths (conventions)
+ * These are where resources live in the theme package
+ */
+const THEME_RESOURCE_PATHS = {
+	layouts: 'layouts',
+	features: 'features',
+	styles: 'styles',
+	scripts: 'scripts',
+	data: 'data',
+	public: 'public',
+};
 
 /**
  * Get override path with fallback to default
  *
- * @param {Object} overridePaths - User override paths
- * @param {string} key - Path key (data, bundles, layouts, etc.)
+ * @param {Object} resolvedOverridePaths - Resolved override paths (from resolveOverridePaths)
+ * @param {string} key - Path key (data, features, layouts, etc.)
  * @returns {string} Override path
  */
-export function getOverridePath(overridePaths, key) {
-	return overridePaths?.[key] || metadata.defaultOverridePaths[key];
+export function getOverridePath(resolvedOverridePaths, key) {
+	return resolvedOverridePaths?.[key] || DEFAULT_OVERRIDE_PATHS[key];
 }
 
 /**
  * Build full paths for user and theme resources
  *
  * @param {string} projectRoot - Content repo root
- * @param {Object} overridePaths - User override paths
- * @param {string} resourceType - Type: 'data', 'bundles', 'layouts', 'public'
+ * @param {string} themeName - Theme package name
+ * @param {Object} resolvedOverridePaths - Resolved override paths
+ * @param {string} resourceType - Type: 'data', 'features', 'layouts', 'public'
  * @param {string} filename - Optional filename to append
  * @returns {Object} Paths object { user, theme, userDir, themeDir }
  */
 export function buildPaths(
 	projectRoot,
-	overridePaths,
+	themeName,
+	resolvedOverridePaths,
 	resourceType,
 	filename = '',
 ) {
-	const userDir = getOverridePath(overridePaths, resourceType);
-	const themeDir = metadata.paths[resourceType];
-	const themeRoot = getThemeRoot(projectRoot);
+	const userDir = getOverridePath(resolvedOverridePaths, resourceType);
+	const themeDir = THEME_RESOURCE_PATHS[resourceType] || resourceType;
+	const themeRoot = getThemeRoot(projectRoot, themeName);
 
 	return {
 		user: path.join(projectRoot, userDir, filename),
@@ -62,8 +78,9 @@ export function buildPaths(
  *
  * @param {Object} options
  * @param {string} options.projectRoot - Content repo root
- * @param {Object} options.overridePaths - User override paths
- * @param {string} options.resourceType - Type: 'data', 'bundles', 'layouts', 'public'
+ * @param {string} options.themeName - Theme package name
+ * @param {Object} options.resolvedOverridePaths - Resolved override paths
+ * @param {string} options.resourceType - Type: 'data', 'features', 'layouts', 'public'
  * @param {string} options.filename - File to resolve
  * @param {boolean} options.throwOnMissing - Throw error if not found
  * @param {string} options.errorMessage - Custom error message
@@ -72,7 +89,8 @@ export function buildPaths(
  * @example
  * const result = resolveResource({
  *   projectRoot: __dirname,
- *   overridePaths: {},
+ *   themeName: '@eleventy-themes/base-blog',
+ *   resolvedOverridePaths: DEFAULT_OVERRIDE_PATHS,
  *   resourceType: 'data',
  *   filename: 'site.js'
  * });
@@ -80,13 +98,20 @@ export function buildPaths(
  */
 export function resolveResource({
 	projectRoot,
-	overridePaths = {},
+	themeName,
+	resolvedOverridePaths = {},
 	resourceType,
 	filename,
 	throwOnMissing = false,
 	errorMessage = null,
 }) {
-	const paths = buildPaths(projectRoot, overridePaths, resourceType, filename);
+	const paths = buildPaths(
+		projectRoot,
+		themeName,
+		resolvedOverridePaths,
+		resourceType,
+		filename,
+	);
 
 	// Check user override first (highest priority)
 	if (fs.existsSync(paths.user)) {
@@ -140,27 +165,35 @@ export function scanDirectory(dirPath, filter = () => true) {
  *
  * @param {Object} options
  * @param {string} options.projectRoot - Content repo root
- * @param {Object} options.overridePaths - User override paths
- * @param {string} options.resourceType - 'data', 'bundles', 'public'
+ * @param {string} options.themeName - Theme package name
+ * @param {Object} options.resolvedOverridePaths - Resolved override paths
+ * @param {string} options.resourceType - 'data', 'features', 'public'
  * @param {Function} options.filter - File filter function
  * @returns {Map<string, { name, source, path }>}
  *
  * @example
  * const items = scanWithCascade({
  *   projectRoot: __dirname,
- *   overridePaths: {},
+ *   themeName: '@eleventy-themes/base-blog',
+ *   resolvedOverridePaths: DEFAULT_OVERRIDE_PATHS,
  *   resourceType: 'data',
  *   filter: file => file.endsWith('.js')
  * });
  */
 export function scanWithCascade({
 	projectRoot,
-	overridePaths = {},
+	themeName,
+	resolvedOverridePaths = {},
 	resourceType,
 	filter = () => true,
 }) {
 	const items = new Map();
-	const paths = buildPaths(projectRoot, overridePaths, resourceType);
+	const paths = buildPaths(
+		projectRoot,
+		themeName,
+		resolvedOverridePaths,
+		resourceType,
+	);
 
 	// Scan theme directory first
 	scanDirectory(paths.themeDir, filter).forEach((file) => {
@@ -224,20 +257,23 @@ export function scanDirectoryRecursive(dirPath, baseDir = dirPath) {
  * Check if resource exists (in user or theme)
  *
  * @param {string} projectRoot - Content repo root
- * @param {Object} overridePaths - User override paths
+ * @param {string} themeName - Theme package name
+ * @param {Object} resolvedOverridePaths - Resolved override paths
  * @param {string} resourceType - Resource type
  * @param {string} filename - File to check
  * @returns {boolean} True if exists
  */
 export function resourceExists(
 	projectRoot,
-	overridePaths,
+	themeName,
+	resolvedOverridePaths,
 	resourceType,
 	filename,
 ) {
 	const result = resolveResource({
 		projectRoot,
-		overridePaths,
+		themeName,
+		resolvedOverridePaths,
 		resourceType,
 		filename,
 		throwOnMissing: false,
