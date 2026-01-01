@@ -14,7 +14,7 @@ import { configurePassthroughCopy } from './assets.mjs';
  * - Data cascade (site.js, navigation.js)
  * - Asset cascade (public files)
  *
- * Template cascade (layouts) is configured separately via configureNunjucks.
+ * Template cascade (layouts) is configured separately via configureTemplateEngine.
  * Feature cascade is implicit (handled by Vite entry points).
  *
  * @param {Object} eleventyConfig - Eleventy configuration object
@@ -37,7 +37,7 @@ export function configureCascade(
 	// Asset cascade (public files)
 	configurePassthroughCopy(eleventyConfig, projectRoot, overridePaths);
 
-	// Note: Template cascade (layouts) is configured via configureNunjucks
+	// Note: Template cascade (layouts) is configured via configureTemplateEngine
 	// Note: Feature cascade is implicit (Vite handles resolution)
 }
 

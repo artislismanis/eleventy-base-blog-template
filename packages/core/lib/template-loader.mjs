@@ -31,7 +31,10 @@ export class ThemeAwareLoader extends Nunjucks.FileSystemLoader {
 }
 
 /**
- * Configure Nunjucks environment with theme support
+ * Configure template engine with theme support
+ *
+ * Generic API for template engine configuration. Currently implements Nunjucks,
+ * but naming is intentionally technology-agnostic for future extensibility.
  *
  * Resolution order for layouts, partials, and includes:
  * 1. @theme/ prefix → theme package directory (explicit)
@@ -49,9 +52,9 @@ export class ThemeAwareLoader extends Nunjucks.FileSystemLoader {
  * @param {string} options.themeName - Theme package name
  * @param {Object} options.overridePaths - Content repo override paths
  * @param {string[]} options.additionalPaths - Extra paths for layout resolution
- * @returns {Object} nunjucksEnv - Configured Nunjucks environment
+ * @returns {Object} Template environment (Nunjucks environment for current implementation)
  */
-export function configureNunjucks(eleventyConfig, options = {}) {
+export function configureTemplateEngine(eleventyConfig, options = {}) {
 	const {
 		projectRoot = process.cwd(),
 		themeName,

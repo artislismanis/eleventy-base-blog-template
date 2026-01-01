@@ -10,13 +10,13 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 
 // Import for local use
-import { configureNunjucks as _configureNunjucks } from './template-loader.mjs';
+import { configureTemplateEngine as _configureTemplateEngine } from './template-loader.mjs';
 
 // Re-export cascade utilities
 export * from './cascade/index.mjs';
 
 // Re-export template loader
-export { configureNunjucks, ThemeAwareLoader } from './template-loader.mjs';
+export { configureTemplateEngine, ThemeAwareLoader } from './template-loader.mjs';
 
 // Re-export validation
 export { validateTheme, logValidation, validateComponent } from './validate.mjs';
@@ -97,7 +97,7 @@ export function createThemePlugin(themeMetadata, options = {}) {
 		} = userOptions;
 
 		// Configure template loader
-		_configureNunjucks(eleventyConfig, {
+		_configureTemplateEngine(eleventyConfig, {
 			projectRoot,
 			themeName: themeMetadata.name,
 			overridePaths: overridePaths || themeMetadata.cascade?.defaultOverridePaths,

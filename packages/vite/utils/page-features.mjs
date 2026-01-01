@@ -18,10 +18,11 @@ export { getAvailableFeatures } from '@eleventy-themes/core';
  * - main.js (global entry - always included)
  * - All available features (theme + user, with user overrides taking precedence)
  *
+ * Core package handles all cascade logic internally via themeMetadata.
+ *
  * @param {string} projectRoot - Project root path
- * @param {string} themeName - Theme package name
  * @param {Object} themeMetadata - Theme metadata object from theme.json
- * @param {Object} overridePaths - Override paths configuration (optional)
+ * @param {Object} [overridePaths] - Optional override paths (only for edge cases)
  * @returns {Object} Entry points object for Vite build.rollupOptions.input
  *
  * @example
@@ -32,23 +33,22 @@ export { getAvailableFeatures } from '@eleventy-themes/core';
  * const viteOptions = {
  *   build: {
  *     rollupOptions: {
- *       input: getFeatureEntries(__dirname, metadata.name, metadata),
+ *       input: getFeatureEntries(__dirname, metadata),
  *     },
  *   },
  * };
  */
-export function getFeatureEntries(projectRoot, themeName, themeMetadata, overridePaths = {}) {
-	// Resolve override paths from theme metadata if not provided
-	const resolvedOverridePaths = overridePaths || themeMetadata.cascade?.defaultOverridePaths || {};
-	const scriptsPath = resolvedOverridePaths.scripts || 'overrides/scripts';
+export function getFeatureEntries(projectRoot, themeMetadata, overridePaths) {
+	// Core handles all cascade logic - we just get the scripts path for main.js
+	const scriptsPath = themeMetadata.cascade?.defaultOverridePaths?.scripts || 'overrides/scripts';
 
 	const entries = {
 		// Main entry point (always included)
 		main: path.join(projectRoot, scriptsPath, 'main.js'),
 	};
 
-	// Discover all available features using core's cascade system
-	const features = getAvailableFeatures(projectRoot, themeMetadata, resolvedOverridePaths);
+	// Discover all available features - core handles override resolution
+	const features = getAvailableFeatures(projectRoot, themeMetadata, overridePaths);
 
 	// Add each feature as an entry point with /name.js pattern
 	// This ensures Vite bundles them for production builds
