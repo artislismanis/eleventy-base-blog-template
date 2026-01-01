@@ -5,10 +5,7 @@
  * Build what works for me, adaptable for your needs.
  */
 
-// Generic Vite config with optimization plugins
-export { createThemeViteConfig as createViteConfig } from './config.mjs';
-
-// Theme-aware configuration (with auto-import + optimizations)
+// Theme-aware Vite configuration with auto-import and optimizations
 export { createThemeViteConfig } from './theme-config.mjs';
 
 // Individual plugins (for cherry-picking)
