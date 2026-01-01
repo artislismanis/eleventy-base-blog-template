@@ -7,6 +7,7 @@
 import fs from 'fs';
 import path from 'path';
 import { themeAutoImportPlugin } from './plugins/auto-import.mjs';
+import { runOptimizations } from './utils/plugin-orchestrator.mjs';
 
 /**
  * Create Vite configuration for any Eleventy theme
@@ -46,6 +47,8 @@ export function createThemeViteConfig(themeMetadata, options = {}) {
 		projectRoot,
 		overridePaths,
 		plugins = [],
+		optimizations,
+		dirs,
 		...viteOptions
 	} = options;
 
@@ -94,6 +97,24 @@ export function createThemeViteConfig(themeMetadata, options = {}) {
 		// User's additional plugins
 		...plugins,
 	];
+
+	// Add optimization plugin if optimizations are configured
+	if (optimizations && Object.keys(optimizations).length > 0) {
+		themePlugins.push({
+			name: 'eleventy-themes-optimization',
+			apply: 'build',
+			async closeBundle() {
+				try {
+					await runOptimizations(optimizations, dirs);
+					console.log('✅ Build optimization complete!\n');
+				} catch (error) {
+					console.error('\n❌ Build optimization failed!');
+					console.error(`   ${error.message}\n`);
+					throw error;
+				}
+			},
+		});
+	}
 
 	// Theme-specific configuration
 	const themeConfig = {

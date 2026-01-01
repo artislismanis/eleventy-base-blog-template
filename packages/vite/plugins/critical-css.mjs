@@ -1,19 +1,8 @@
-import path from 'path';
 import fs from 'fs/promises';
-
-import { glob } from 'glob';
 import Critters from 'critters';
+import { processFiles } from '../utils/file-processor.mjs';
 
 export async function generateCriticalCSS(outputDir = '_site', options = {}) {
-	console.log('\n📦 Generating critical CSS...\n');
-
-	const htmlFiles = await glob(`${outputDir}/**/*.html`);
-
-	if (htmlFiles.length === 0) {
-		console.log('⚠️  Critical CSS: No HTML files found to process');
-		return;
-	}
-
 	const critters = new Critters({
 		path: outputDir,
 		...options,
@@ -26,12 +15,12 @@ export async function generateCriticalCSS(outputDir = '_site', options = {}) {
 		logLevel: 'warn', // Only show warnings/errors from Critters
 	});
 
-	let successCount = 0;
-	let errorCount = 0;
-	const errors = [];
-
-	for (const file of htmlFiles) {
-		try {
+	return processFiles({
+		pattern: `${outputDir}/**/*.html`,
+		outputDir,
+		taskName: 'Critical CSS',
+		errorTip: 'Check if CSS files exist and are properly linked in HTML',
+		processor: async (file) => {
 			const html = await fs.readFile(file, 'utf-8');
 			const inlined = await critters.process(html);
 
@@ -51,34 +40,6 @@ export async function generateCriticalCSS(outputDir = '_site', options = {}) {
 			);
 
 			await fs.writeFile(file, tidy_final);
-
-			console.log(`✓ ${path.relative(output, file)}`);
-			successCount++;
-		} catch (error) {
-			errorCount++;
-			errors.push({
-				file: path.relative(output, file),
-				error: error.message,
-				stack: error.stack,
-			});
-			console.error(`✗ ${path.relative(output, file)}: ${error.message}`);
-		}
-	}
-
-	console.log(
-		`\n✓ Critical CSS generated: ${successCount}/${htmlFiles.length} pages${errorCount > 0 ? `, ${errorCount} failed` : ''}\n`,
-	);
-
-	if (errorCount > 0) {
-		console.error('\n❌ Critical CSS Errors:');
-		errors.forEach(({ file, error }) => {
-			console.error(`   ${file}: ${error}`);
-		});
-		console.error(
-			'\nTip: Check if CSS files exist and are properly linked in HTML',
-		);
-		throw new Error(
-			`Critical CSS generation failed for ${errorCount} file(s). See errors above.`,
-		);
-	}
+		},
+	});
 }

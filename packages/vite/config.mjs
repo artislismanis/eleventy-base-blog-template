@@ -5,13 +5,7 @@
  * All optimizations are opt-in/opt-out.
  */
 
-import {
-	purgeCSSFiles,
-	generateCriticalCSS,
-	minifyHTML,
-	validateLinks,
-	preserveNonHtmlFiles,
-} from './plugins/index.mjs';
+import { runOptimizations } from './utils/plugin-orchestrator.mjs';
 
 /**
  * Create Vite configuration with theme optimizations
@@ -88,41 +82,7 @@ export function createThemeViteConfig(options = {}) {
 		apply: 'build',
 		async closeBundle() {
 			try {
-				// preserveNonHtml
-				if (optimizations.preserveNonHtml === true) {
-					await preserveNonHtmlFiles(dirs.temp, dirs.output);
-				} else if (typeof optimizations.preserveNonHtml === 'function') {
-					await optimizations.preserveNonHtml();
-				}
-
-				// purgeCSS
-				if (optimizations.purgeCSS === true) {
-					await purgeCSSFiles(dirs.output);
-				} else if (typeof optimizations.purgeCSS === 'function') {
-					await optimizations.purgeCSS();
-				}
-
-				// criticalCSS
-				if (optimizations.criticalCSS === true) {
-					await generateCriticalCSS(dirs.output);
-				} else if (typeof optimizations.criticalCSS === 'function') {
-					await optimizations.criticalCSS();
-				}
-
-				// minifyHTML
-				if (optimizations.minifyHTML === true) {
-					await minifyHTML(dirs.output);
-				} else if (typeof optimizations.minifyHTML === 'function') {
-					await optimizations.minifyHTML();
-				}
-
-				// validateLinks
-				if (optimizations.validateLinks === true) {
-					await validateLinks(dirs.output);
-				} else if (typeof optimizations.validateLinks === 'function') {
-					await optimizations.validateLinks();
-				}
-
+				await runOptimizations(optimizations, dirs);
 				console.log('✅ Build optimization complete!\n');
 			} catch (error) {
 				console.error('\n❌ Build optimization failed!');

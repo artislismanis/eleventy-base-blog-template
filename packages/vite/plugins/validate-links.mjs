@@ -61,7 +61,7 @@ export async function validateLinks(outputDir = '_site', options = {}) {
 				let targetPath;
 				if (cleanHref.startsWith('/')) {
 					// Absolute path from site root
-					targetPath = path.join(output, cleanHref);
+					targetPath = path.join(outputDir, cleanHref);
 				} else {
 					// Relative path from current file
 					targetPath = path.join(baseDir, cleanHref);
@@ -102,7 +102,7 @@ export async function validateLinks(outputDir = '_site', options = {}) {
 				let imagePath;
 				if (src.startsWith('/')) {
 					// Absolute path from site root
-					imagePath = path.join(output, src);
+					imagePath = path.join(outputDir, src);
 				} else {
 					// Relative path from current file
 					imagePath = path.join(baseDir, src);
@@ -119,7 +119,7 @@ export async function validateLinks(outputDir = '_site', options = {}) {
 			}
 		} catch (error) {
 			errors.push({
-				file: path.relative(output, htmlFile),
+				file: path.relative(outputDir, htmlFile),
 				type: 'parse-error',
 				message: `Failed to parse HTML: ${error.message}`,
 			});

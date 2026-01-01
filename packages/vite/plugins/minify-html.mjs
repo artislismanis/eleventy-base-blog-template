@@ -1,19 +1,8 @@
-import path from 'path';
 import fs from 'fs/promises';
-
-import { glob } from 'glob';
 import { minify } from 'html-minifier-terser';
+import { processFiles } from '../utils/file-processor.mjs';
 
 export async function minifyHTML(outputDir = '_site', userOptions = {}) {
-	console.log('\n📦 Minifying HTML...\n');
-
-	const htmlFiles = await glob(`${outputDir}/**/*.html`);
-
-	if (htmlFiles.length === 0) {
-		console.log('⚠️  HTML Minify: No HTML files found to process');
-		return;
-	}
-
 	const defaultOptions = {
 		collapseBooleanAttributes: true,
 		collapseWhitespace: true,
@@ -39,14 +28,12 @@ export async function minifyHTML(outputDir = '_site', userOptions = {}) {
 
 	const options = { ...defaultOptions, ...userOptions };
 
-	let totalOriginalSize = 0;
-	let totalMinifiedSize = 0;
-	let successCount = 0;
-	let errorCount = 0;
-	const errors = [];
-
-	for (const file of htmlFiles) {
-		try {
+	return processFiles({
+		pattern: `${outputDir}/**/*.html`,
+		outputDir,
+		taskName: 'HTML Minification',
+		errorTip: 'Check if HTML is valid and properly formed. Invalid HTML can cause minification to fail.',
+		processor: async (file) => {
 			const html = await fs.readFile(file, 'utf-8');
 			const originalSize = Buffer.byteLength(html, 'utf8');
 			const minified = await minify(html, options);
@@ -54,40 +41,21 @@ export async function minifyHTML(outputDir = '_site', userOptions = {}) {
 
 			await fs.writeFile(file, minified);
 
-			totalOriginalSize += originalSize;
-			totalMinifiedSize += minifiedSize;
-
 			const savings = ((1 - minifiedSize / originalSize) * 100).toFixed(1);
-			console.log(`✓ ${path.relative(outputDir, file)} (${savings}% smaller)`);
-			successCount++;
-		} catch (error) {
-			errorCount++;
-			errors.push({
-				file: path.relative(outputDir, file),
-				error: error.message,
-			});
-			console.error(`✗ ${path.relative(outputDir, file)}: ${error.message}`);
-		}
-	}
 
-	const totalSavings = (
-		(1 - totalMinifiedSize / totalOriginalSize) *
-		100
-	).toFixed(1);
-	console.log(
-		`\n✓ HTML minified: ${successCount}/${htmlFiles.length} pages, ${totalSavings}% reduction (${(totalOriginalSize / 1024).toFixed(1)} KB → ${(totalMinifiedSize / 1024).toFixed(1)} KB)${errorCount > 0 ? `, ${errorCount} failed` : ''}\n`,
-	);
+			return {
+				message: ` (${savings}% smaller)`,
+				stats: { originalSize, minifiedSize },
+			};
+		},
+		calculateStats: (results) => {
+			const totalOriginal = results.reduce((sum, r) => sum + r.stats.originalSize, 0);
+			const totalMinified = results.reduce((sum, r) => sum + r.stats.minifiedSize, 0);
+			const totalSavings = ((1 - totalMinified / totalOriginal) * 100).toFixed(1);
 
-	if (errorCount > 0) {
-		console.error('\n❌ HTML Minification Errors:');
-		errors.forEach(({ file, error }) => {
-			console.error(`   ${file}: ${error}`);
-		});
-		console.error(
-			'\nTip: Check if HTML is valid and properly formed. Invalid HTML can cause minification to fail.',
-		);
-		throw new Error(
-			`HTML minification failed for ${errorCount} file(s). See errors above.`,
-		);
-	}
+			return {
+				'total reduction': `${totalSavings}% (${(totalOriginal / 1024).toFixed(1)} KB → ${(totalMinified / 1024).toFixed(1)} KB)`,
+			};
+		},
+	});
 }
