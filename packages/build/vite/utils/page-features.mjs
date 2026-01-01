@@ -2,14 +2,14 @@
  * Utilities for resolving page-specific features for Vite builds
  *
  * Provides entry point discovery for features referenced in page front matter.
- * Works with any theme that follows the @eleventy-themes conventions.
+ * Works with any theme that follows the @eleventy-plugin-themer conventions.
  */
 
 import path from 'path';
-import { getAvailableFeatures, resolveOverridePaths } from '@eleventy-themes/core';
+import { getAvailableFeatures, resolveOverridePaths } from '@eleventy-plugin-themer/core';
 
 // Re-export for convenience
-export { getAvailableFeatures } from '@eleventy-themes/core';
+export { getAvailableFeatures } from '@eleventy-plugin-themer/core';
 
 /**
  * Get Vite entry points for all features
@@ -27,8 +27,8 @@ export { getAvailableFeatures } from '@eleventy-themes/core';
  *
  * @example
  * // In eleventy.config.mjs
- * import { getFeatureEntries } from '@eleventy-themes/vite';
- * import { metadata } from '@eleventy-themes/base-blog';
+ * import { getFeatureEntries } from '@eleventy-plugin-themer/build-vite';
+ * import { metadata } from '@eleventy-plugin-themer/theme-base';
  *
  * const viteOptions = {
  *   build: {

@@ -98,7 +98,7 @@ export function featureExists(
  *   Source is: 'theme', 'user', or 'override'
  *
  * @example
- * import { metadata } from '@eleventy-themes/base-blog';
+ * import { metadata } from '@eleventy-plugin-themer/theme-base';
  * const features = getAvailableFeatures(__dirname, metadata);
  * features.forEach((info, name) => {
  *   console.log(`${name}: ${info.source} (${info.path})`);

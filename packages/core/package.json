@@ -1,6 +1,6 @@
 {
-	"name": "@eleventy-themes/core",
-	"version": "1.0.0",
+	"name": "@eleventy-plugin-themer/core",
+	"version": "3.0.0",
 	"description": "Build-agnostic core cascade system for Eleventy themes",
 	"type": "module",
 	"main": "lib/index.mjs",
@@ -27,7 +27,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/artislismanis/eleventy-themes.git",
+		"url": "git+https://github.com/artislismanis/eleventy-plugin-themer.git",
 		"directory": "packages/core"
 	},
 	"peerDependencies": {

@@ -1,6 +1,6 @@
 {
-	"name": "@eleventy-themes/vite",
-	"version": "1.0.0",
+	"name": "@eleventy-plugin-themer/build-vite",
+	"version": "3.0.0",
 	"description": "Opinionated Vite integration with production optimizations for Eleventy themes",
 	"type": "module",
 	"main": "index.mjs",
@@ -30,11 +30,11 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/artislismanis/eleventy-themes.git",
-		"directory": "packages/vite"
+		"url": "git+https://github.com/artislismanis/eleventy-plugin-themer.git",
+		"directory": "packages/build/vite"
 	},
 	"dependencies": {
-		"@eleventy-themes/core": "^1.0.0",
+		"@eleventy-plugin-themer/core": "^3.0.0",
 		"glob": "^13.0.0",
 		"purgecss": "^6.0.0",
 		"critters": "^0.0.24",

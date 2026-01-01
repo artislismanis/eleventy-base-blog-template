@@ -1,5 +1,5 @@
 /**
- * @eleventy-themes/core
+ * @eleventy-plugin-themer/core
  *
  * Build-agnostic cascade system for Eleventy themes.
  * Works with any build system or no build system at all.
@@ -43,8 +43,8 @@ export { DEFAULT_OVERRIDE_PATHS, DEFAULT_ASSET_ENTRIES, resolveOverridePaths } f
  * @returns {Object} Eleventy configuration with dir settings
  *
  * @example
- * import { generateDirConfig } from '@eleventy-themes/core';
- * import { metadata } from '@eleventy-themes/base-blog';
+ * import { generateDirConfig } from '@eleventy-plugin-themer/core';
+ * import { metadata } from '@eleventy-plugin-themer/theme-base';
  *
  * export default function(eleventyConfig) {
  *   const __dirname = fileURLToPath(new URL('.', import.meta.url));

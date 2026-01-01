@@ -1,10 +1,10 @@
 /**
- * @eleventy-themes/base-blog
+ * @eleventy-plugin-themer/theme-base
  *
- * A convention-based blog theme using @eleventy-themes/core
+ * A minimal convention-based theme using @eleventy-plugin-themer/core
  */
 
-import { createThemePlugin } from '@eleventy-themes/core';
+import { createThemePlugin } from '@eleventy-plugin-themer/core';
 import themeMetadata from '../theme.json' with { type: 'json' };
 import filters from './filters.mjs';
 import shortcodes from './shortcodes.mjs';

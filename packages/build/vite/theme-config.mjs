@@ -6,14 +6,14 @@
 
 import fs from 'fs';
 import path from 'path';
-import { resolveOverridePaths, DEFAULT_ASSET_ENTRIES, getThemeRoot } from '@eleventy-themes/core';
+import { resolveOverridePaths, DEFAULT_ASSET_ENTRIES, getThemeRoot } from '@eleventy-plugin-themer/core';
 import { themeAutoImportPlugin } from './plugins/auto-import.mjs';
 import { runOptimizations } from './utils/plugin-orchestrator.mjs';
 
 /**
  * Create Vite configuration for any Eleventy theme
  *
- * This wraps @eleventy-themes/vite with theme-specific features:
+ * This wraps @eleventy-plugin-themer/build-vite with theme-specific features:
  * - Auto-imports theme CSS and JS
  * - @theme alias for imports
  * - SCSS preprocessor configuration with theme paths
@@ -28,8 +28,8 @@ import { runOptimizations } from './utils/plugin-orchestrator.mjs';
  * @returns {Object} Vite configuration object
  *
  * @example
- * import { createThemeViteConfig } from '@eleventy-themes/core/lib/vite';
- * import { metadata } from '@eleventy-themes/base-blog';
+ * import { createThemeViteConfig } from '@eleventy-plugin-themer/build-vite';
+ * import { metadata } from '@eleventy-plugin-themer/theme-base';
  *
  * const __dirname = fileURLToPath(new URL('.', import.meta.url));
  *

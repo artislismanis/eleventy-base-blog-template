@@ -1,5 +1,5 @@
 /**
- * Framework defaults for @eleventy-themes/core
+ * Framework defaults for @eleventy-plugin-themer/core
  *
  * These are the core framework conventions, not theme-specific settings.
  * Themes should not override these - they define how the framework works.

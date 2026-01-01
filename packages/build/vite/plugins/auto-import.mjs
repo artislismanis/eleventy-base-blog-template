@@ -12,12 +12,12 @@
  * @returns {Object} Vite plugin
  *
  * @example
- * import { themeAutoImportPlugin } from '@eleventy-themes/vite/plugins/auto-import';
+ * import { themeAutoImportPlugin } from '@eleventy-plugin-themer/build-vite/plugins/auto-import';
  *
  * export default {
  *   plugins: [
  *     themeAutoImportPlugin({
- *       themeName: '@eleventy-themes/base-blog',
+ *       themeName: '@eleventy-plugin-themer/theme-base',
  *       stylesEntry: 'styles/main.scss',
  *       scriptsEntry: 'scripts/main.js',
  *     }),

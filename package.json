@@ -1,11 +1,13 @@
 {
-	"name": "eleventy-themes",
+	"name": "eleventy-plugin-themer",
 	"version": "1.0.0",
 	"description": "Opinionated, build-agnostic theming system for Eleventy",
 	"private": true,
 	"type": "module",
 	"workspaces": [
-		"packages/*"
+		"packages/core",
+		"packages/build/*",
+		"packages/themes/*"
 	],
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
@@ -23,6 +25,6 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/artislismanis/eleventy-themes.git"
+		"url": "git+https://github.com/artislismanis/eleventy-plugin-themer.git"
 	}
 }

@@ -1,5 +1,5 @@
 /**
- * @eleventy-themes/vite
+ * @eleventy-plugin-themer/build-vite
  *
  * Opinionated Vite integration with production optimizations.
  * Build what works for me, adaptable for your needs.

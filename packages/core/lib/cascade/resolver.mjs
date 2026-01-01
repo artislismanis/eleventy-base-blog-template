@@ -89,7 +89,7 @@ export function buildPaths(
  * @example
  * const result = resolveResource({
  *   projectRoot: __dirname,
- *   themeName: '@eleventy-themes/base-blog',
+ *   themeName: '@eleventy-plugin-themer/theme-base',
  *   resolvedOverridePaths: DEFAULT_OVERRIDE_PATHS,
  *   resourceType: 'data',
  *   filename: 'site.js'
@@ -174,7 +174,7 @@ export function scanDirectory(dirPath, filter = () => true) {
  * @example
  * const items = scanWithCascade({
  *   projectRoot: __dirname,
- *   themeName: '@eleventy-themes/base-blog',
+ *   themeName: '@eleventy-plugin-themer/theme-base',
  *   resolvedOverridePaths: DEFAULT_OVERRIDE_PATHS,
  *   resourceType: 'data',
  *   filter: file => file.endsWith('.js')
