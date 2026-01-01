@@ -5,7 +5,7 @@
  */
 
 import { createThemePlugin } from '@eleventy-themes/core';
-import themeMetadata from '../theme.json' assert { type: 'json' };
+import themeMetadata from '../theme.json' with { type: 'json' };
 import filters from './filters.mjs';
 import shortcodes from './shortcodes.mjs';
 import transforms from './transforms.mjs';

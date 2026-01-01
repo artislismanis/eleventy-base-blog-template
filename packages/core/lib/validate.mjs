@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { metadata } from '../metadata.mjs';
+import { metadata } from './metadata.mjs';
 
 /**
  * Validate theme installation and provide helpful errors

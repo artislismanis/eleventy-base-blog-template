@@ -5,6 +5,7 @@
  * If a dependency is not installed, the plugin skips gracefully.
  */
 
+export { themeAutoImportPlugin } from './auto-import.mjs';
 export { purgeCSSFiles } from './purge-css.mjs';
 export { generateCriticalCSS } from './critical-css.mjs';
 export { minifyHTML } from './minify-html.mjs';

@@ -1,6 +1,6 @@
 {
 	"$schema": "https://eleventy-themes.dev/schema/theme.json",
-	"name": "eleventy-base-blog-template",
+	"name": "@eleventy-themes/base-blog",
 	"version": "2.0.0",
 	"description": "A convention-based Eleventy theme with self-describing metadata, @theme alias, auto-import, and extensible features",
 	"author": "Artis Lismanis",

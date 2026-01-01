@@ -20,8 +20,8 @@
  * See styles/bundles/code-highlighting.scss for full CSS custom properties list.
  */
 
-// Import bundle styles
-import '../styles/bundles/code-highlighting.scss';
+// Import feature styles
+import './styles.scss';
 
 /**
  * Default configuration

@@ -11,8 +11,10 @@
 	},
 	"files": [
 		"plugins/",
+		"utils/",
 		"index.mjs",
 		"config.mjs",
+		"theme-config.mjs",
 		"README.md",
 		"LICENSE"
 	],
@@ -32,26 +34,17 @@
 		"url": "git+https://github.com/artislismanis/eleventy-themes.git",
 		"directory": "packages/vite"
 	},
+	"dependencies": {
+		"@eleventy-themes/core": "^1.0.0",
+		"glob": "^13.0.0",
+		"purgecss": "^6.0.0",
+		"critters": "^0.0.24",
+		"html-minifier-terser": "^7.2.0",
+		"node-html-parser": "^7.0.1"
+	},
 	"peerDependencies": {
 		"vite": "^5.0.0 || ^6.0.0 || ^7.0.0",
 		"@11ty/eleventy-plugin-vite": "^7.0.0"
-	},
-	"peerDependenciesMeta": {
-		"purgecss": {
-			"optional": true
-		},
-		"critters": {
-			"optional": true
-		},
-		"html-minifier-terser": {
-			"optional": true
-		},
-		"node-html-parser": {
-			"optional": true
-		},
-		"glob": {
-			"optional": true
-		}
 	},
 	"engines": {
 		"node": ">=22"

@@ -60,13 +60,13 @@
 		{# User's main.js imports theme styles/scripts #}
 		<script type="module" src="/assets/scripts/main.js"></script>
 
-		{# Page-specific JavaScript bundles (opt-in via front matter) #}
-		{% if pageBundle %}
-			<script type="module" src="/assets/scripts/bundles/{{ pageBundle }}.js"></script>
+		{# Page-specific JavaScript features (opt-in via front matter) #}
+		{% if pageFeature %}
+			<script type="module" src="/{{ pageFeature }}.js"></script>
 		{% endif %}
-		{% if pageBundles %}
-			{% for bundle in pageBundles %}
-				<script type="module" src="/assets/scripts/bundles/{{ bundle }}.js"></script>
+		{% if pageFeatures %}
+			{% for feature in pageFeatures %}
+				<script type="module" src="/{{ feature }}.js"></script>
 			{% endfor %}
 		{% endif %}
 	</body>

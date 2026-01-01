@@ -12,7 +12,7 @@
  *   pageBundle: code-highlighting.auto
  *   ---
  */
-import { init } from './code-highlighting.js';
+import { init } from './index.js';
 
 // Auto-initialize with default configuration
 init();

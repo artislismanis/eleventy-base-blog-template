@@ -8,10 +8,10 @@
  */
 
 import path from 'path';
+import fs from 'fs';
 import { metadata } from '../metadata.mjs';
 import {
 	resolveResource,
-	scanWithCascade,
 	resourceExists,
 	getOverridePath,
 } from './resolver.mjs';
@@ -70,36 +70,67 @@ export function featureExists(featureName, projectRoot, overridePaths = {}) {
 /**
  * Get all available features (theme + user)
  *
- * Returns information about all features with source tracking.
+ * Features are stored in subdirectories with index.js entry points:
+ * - Theme: features/code-highlighting/index.js (from themeFeatures metadata)
+ * - User: overrides/features/code-highlighting/index.js (filesystem scan)
  *
  * @param {string} projectRoot - Content repo root
- * @param {Object} overridePaths - Override paths configuration
+ * @param {Object} themeMetadata - Theme metadata from theme.json
+ * @param {Object} overridePaths - Override paths configuration (optional)
  * @returns {Map<string, Object>} Map of feature name to feature info
  *   Each feature info contains: { name, source, path }
  *   Source is: 'theme', 'user', or 'override'
  *
  * @example
- * const features = getAvailableFeatures(__dirname);
+ * import { metadata } from '@eleventy-themes/base-blog';
+ * const features = getAvailableFeatures(__dirname, metadata);
  * features.forEach((info, name) => {
- *   console.log(`${name}: ${info.source}`);
+ *   console.log(`${name}: ${info.source} (${info.path})`);
  * });
  */
-export function getAvailableFeatures(projectRoot, overridePaths = {}) {
-	const features = scanWithCascade({
-		projectRoot,
-		overridePaths,
-		resourceType: 'features',
-		filter: (file) => file.endsWith('.js'),
-	});
+export function getAvailableFeatures(projectRoot, themeMetadata, overridePaths = {}) {
+	const resolvedOverridePaths = overridePaths || themeMetadata.cascade?.defaultOverridePaths || {};
+	const featuresPath = resolvedOverridePaths.features || metadata.defaultOverridePaths.features;
+	const features = new Map();
 
-	// Remove .js extension from names for cleaner API
-	const result = new Map();
-	features.forEach((info, filename) => {
-		const name = path.basename(filename, '.js');
-		result.set(name, { ...info, name });
-	});
+	// Add theme features from themeMetadata (explicit definition)
+	if (themeMetadata.themeFeatures && Array.isArray(themeMetadata.themeFeatures)) {
+		const themeRoot = path.join(projectRoot, 'node_modules', themeMetadata.name);
 
-	return result;
+		themeMetadata.themeFeatures.forEach((feature) => {
+			const featurePath = path.join(themeRoot, feature.entry);
+			if (fs.existsSync(featurePath)) {
+				features.set(feature.name, {
+					name: feature.name,
+					source: 'theme',
+					path: featurePath,
+				});
+			}
+		});
+	}
+
+	// Check for user feature overrides/additions (subdirectories with index.js)
+	const userFeaturesDir = path.join(projectRoot, featuresPath);
+	if (fs.existsSync(userFeaturesDir)) {
+		// Scan for subdirectories
+		fs.readdirSync(userFeaturesDir, { withFileTypes: true })
+			.filter((dirent) => dirent.isDirectory())
+			.forEach((dirent) => {
+				const featureName = dirent.name;
+				const indexPath = path.join(userFeaturesDir, featureName, 'index.js');
+
+				if (fs.existsSync(indexPath)) {
+					const isOverride = features.has(featureName);
+					features.set(featureName, {
+						name: featureName,
+						source: isOverride ? 'override' : 'user',
+						path: indexPath,
+					});
+				}
+			});
+	}
+
+	return features;
 }
 
 /**
