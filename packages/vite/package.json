@@ -13,7 +13,6 @@
 		"plugins/",
 		"utils/",
 		"index.mjs",
-		"config.mjs",
 		"theme-config.mjs",
 		"README.md",
 		"LICENSE"
